@@ -86,7 +86,7 @@ contains
       ran = ranges
     else
       allocate(ran(2,ndim))
-      ran(1,:) = -1.0e0_wp
+      ran(1,:) = 0.0e0_wp
       ran(2,:) = 1.0e0_wp
     end if
 
