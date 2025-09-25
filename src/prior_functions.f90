@@ -35,13 +35,13 @@ contains
 
   end subroutine log_uniform_prior
 
-  subroutine gaussian_prior(theta, mu, sigma, f_sigma, logp)
+  subroutine gaussian_prior(theta, mu, logp, sigma, f_sigma)
 
     real(wp), intent(in) :: theta(:)
     real(wp), intent(in) :: mu(:)
+    real(wp), intent(out) :: logp
     real(wp), intent(in), optional :: sigma(:)
     real(wp), intent(in), optional :: f_sigma(:)
-    real(wp), intent(out) :: logp
 
     real(wp), allocatable :: sig(:)
     real(wp), allocatable :: f(:)
