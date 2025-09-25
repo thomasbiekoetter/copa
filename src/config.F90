@@ -13,7 +13,7 @@ module copa__config
   integer, parameter, public :: wp = dp
 #endif
 
-  integer, parameter, public :: nwalkers_default = 20
+  integer, parameter, public :: nwalkers_default = 50
   integer, parameter, public :: nsteps_default = 1000
 
 end module copa__config
