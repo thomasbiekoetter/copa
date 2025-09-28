@@ -1,4 +1,4 @@
-program copa__test_linear
+program copa__test_quadratic
 
   use copa__config, only : wp
   use copa__sampler, only : run_sampler
@@ -22,13 +22,7 @@ program copa__test_linear
 
   call initialize_rands(mode='twister', seed=1)
 
-  ! Fake observed data for testing: y = 2*x + 1 + noise
-  do i = 1, size(data)
-    rand1 = randfloat(0.99e0_wp, 1.01e0_wp)
-    rand2 = randfloat(0.99e0_wp, 1.01e0_wp)
-    data(i) = rand1 * (2.0e0_wp * i + 10.0e0_wp - 4.0 * i ** 2) + rand2
-  end do
-  sigma_obs = 0.01e0_wp * data
+  call generate_mock_data()
 
   ranges(1,:) = -1.0e2_wp
   ranges(2,:) = 1.0e2_wp
@@ -40,25 +34,20 @@ program copa__test_linear
     walkers=walkers,  &
     chains=chains)
 
-  call store_chains(chains, "plots/linear/chains.npy", mode='machine')
+  call store_chains(chains, "plots/quadratic/chains.npy", mode='machine')
 
   best_ind = evolve_population(  &
     1000, 3, fit_func,  &
     max_generations=1000, &
+    selection='rank',  &
     selection_size=200,  &
     mating='sbx', &
     verbose=.true.,  &
     mutate='gaussian',  &
     lower_lim=-1.0e2_wp,  &
     upper_lim=1.0e2_wp)
-  open(unit=11, file='plots/linear/evortran_best.csv', status='replace')
-    do i = 1, size(best_ind%genes)
-      write(11,'(F0.6)', advance='no') best_ind%genes(i)
-      if (i < size(best_ind%genes)) then
-        write(11,'(a)', advance='no') ','
-      end if
-    end do
-  close(11)
+
+  call save_best_ind(best_ind%genes)
 
 contains
 
@@ -96,4 +85,31 @@ contains
 
   end subroutine fit_func
 
-end program copa__test_linear
+  subroutine generate_mock_data()
+
+    ! Fake observed data: y = noise * (2*x + 10 - 4*x**2) + noise
+    do i = 1, size(data)
+      rand1 = randfloat(0.99e0_wp, 1.01e0_wp)
+      rand2 = randfloat(0.99e0_wp, 1.01e0_wp)
+      data(i) = rand1 * (2.0e0_wp * i + 10.0e0_wp - 4.0 * i ** 2) + rand2
+    end do
+    sigma_obs = 0.01e0_wp * data
+
+  end subroutine generate_mock_data
+
+  subroutine save_best_ind(genes)
+
+    real(wp), intent(in) :: genes(:)
+
+    open(unit=11, file='plots/quadratic/evortran_best.csv', status='replace')
+      do i = 1, size(genes)
+        write(11,'(F0.6)', advance='no') genes(i)
+        if (i < size(genes)) then
+          write(11,'(a)', advance='no') ','
+        end if
+      end do
+    close(11)
+
+  end subroutine save_best_ind
+
+end program copa__test_quadratic

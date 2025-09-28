@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 ndim = 3
-nwalkers = 20
+nwalkers = 50
 nsteps = 100000
 
 burn_in = 10000
@@ -14,13 +14,17 @@ samples = np.fromfile('chains.npy', dtype=np.float64)
 samples = samples.reshape((nwalkers*nsteps, ndim))
 samples = samples[burn_in:-1,:]
 
+labels = []
+for i in range(0, ndim):
+    l = r'$\theta_' + str(i + 1) + r'$'
+    labels.append(l)
+
 figure = corner.corner(
     samples,
-    labels=["theta1", "theta2", "theta3"],  # replace with your param names
+    labels=labels,
     show_titles=True,
     title_fmt=".2f",
-#   quantiles=[0.16, 0.5, 0.84],  # 1-sigma intervals
-    levels=(0.68, 0.95),  # confidence levels
+    levels=(0.68, 0.95),
     plot_datapoints=False)
 
 db = pd.read_csv("evortran_best.csv").columns.astype(float).to_numpy()
