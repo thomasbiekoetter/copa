@@ -7,11 +7,12 @@ import matplotlib.pyplot as plt
 ndim = 5
 nwalkers = 50
 nsteps = 10000
+nthreads = 4
 
 burn_in = 1000
 
 samples = np.fromfile('chains.npy', dtype=np.float64)
-samples = samples.reshape((nwalkers*nsteps, ndim))
+samples = samples.reshape((nwalkers * nsteps * nthreads, ndim))
 samples = samples[burn_in:-1,:]
 
 ranges = []
