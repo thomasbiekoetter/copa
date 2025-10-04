@@ -16,8 +16,8 @@ samples = samples.reshape((nwalkers * nsteps * nthreads, ndim))
 samples = samples[burn_in:-1,:]
 
 ranges = []
-dlim = -1
-ulim = 8
+dlim = -15 + 200
+ulim = 20 + 200
 for i in range(0, ndim):
     ranges.append((dlim, ulim))
 

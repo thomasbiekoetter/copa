@@ -3,7 +3,7 @@ program copa__test_anisotropic_gaussian
   use copa__config, only : wp
   use copa__parallel_sampler, only : run_parallel_sampler
   use copa__store, only : store_chains
-  use copa__prior_functions, only : uniform_prior
+  use copa__prior_functions, only : log_uniform_prior
   use evortran__prng_rand, only : initialize_rands
 
   implicit none
@@ -11,8 +11,8 @@ program copa__test_anisotropic_gaussian
   integer, parameter :: ndim = 5
   integer, parameter :: nthreads = 4
   integer, parameter :: nsteps = int(40000 / nthreads)
-  real(wp), parameter :: lower(ndim) = -1.0e2_wp
-  real(wp), parameter :: upper(ndim) = 1.0e2_wp
+  real(wp), parameter :: lower(ndim) = 1.0e2_wp
+  real(wp), parameter :: upper(ndim) = 3.0e2_wp
   real(wp) :: mu(ndim)
   real(wp) :: var(ndim)
   real(wp) :: sigma_inv(ndim, ndim)
@@ -25,7 +25,7 @@ program copa__test_anisotropic_gaussian
 
   sigma_inv = 0.0e0_wp
   do i = 1, ndim
-    mu(i) = real(i, wp)
+    mu(i) = 200.0e0_wp + real(i, wp)
     var(i) = mu(i) * 1.0e-1_wp
     sigma_inv(i,i) = 1.0e0_wp / var(i)
   end do
@@ -55,7 +55,7 @@ contains
     real(wp), intent(in) :: theta(:)
     real(wp), intent(out) :: logp
 
-    call uniform_prior(theta, lower, upper, logp)
+    call log_uniform_prior(theta, lower, upper, logp)
 
   end subroutine log_prior
 

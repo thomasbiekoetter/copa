@@ -31,7 +31,29 @@ contains
 
   end subroutine uniform_prior
 
-  subroutine log_uniform_prior()
+  subroutine log_uniform_prior(theta, lower, upper, logp)
+
+    real(wp), intent(in) :: theta(:)
+    real(wp), intent(in) :: lower(:)
+    real(wp), intent(in) :: upper(:)
+    real(wp), intent(out) :: logp
+
+    integer :: i
+
+    ! Log-uniform prior (Jeffrey-like)
+    if (any(lower <= 0.0e0_wp)) then
+      write(*,*) "Lower limit of thetas must be positive for log-uniform prior."
+      call exit
+    end if
+    logp = huge_negative
+    if (all((theta >= lower) .and. (theta <= upper))) then
+      logp = 0.0e0_wp
+      do i = 1, size(theta)
+        ! Metropolis–Hastings acceptance rule -> ln (not log10)
+        logp = logp - log(theta(i)) - (log(log(upper(i)) -  &
+          log(lower(i))))
+      end do
+    end if
 
   end subroutine log_uniform_prior
 
@@ -63,22 +85,5 @@ contains
     logp = -0.5_wp * sum(((theta - mu) / sig) ** 2)
 
   end subroutine gaussian_prior
-
-    ! Log-uniform prior (Jeffrey-like)
-!   if (any(theta_lower <= 0.0e0_wp)) then
-!     write(*,*) "Lower limit of thetas must be positive for log-uniform prior."
-!     call exit
-!   end if
-!   logp = hugeneg
-!   if (all((theta >= theta_lower) .and. (theta <= theta_upper))) then
-!     logp = 0.0e0_wp
-!     do i = 1, size(theta)
-!       ! Metropolis–Hastings acceptance rule -> ln (not log10)
-!       logp = logp - log(theta(i)) - (log(log(theta_upper(i)) -  &
-!         log(theta_lower(i))))
-!     end do
-!   end if
-
-
 
 end module copa__prior_functions
