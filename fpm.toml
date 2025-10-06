@@ -17,24 +17,28 @@ implicit-typing = false
 implicit-external = false
 source-form = "free"
 [dependencies]
-openmp="*"
+openmp = "*"
 evortran = { git="https://gitlab.com/thomas.biekoetter/evortran.git", branch= "ifx" }
 [[test]]
 name = "copa__test_quadratic"
-source-dir="test"
+source-dir = "test"
 main = "quadratic.f90"
 [[test]]
 name = "copa__test_standard_normal"
-source-dir="test"
+source-dir = "test"
 main = "standard_normal.f90"
 [[test]]
 name = "copa__test_anisotropic_gaussian"
-source-dir="test"
+source-dir = "test"
 main = "anisotropic_gaussian.f90"
 [[test]]
 name = "copa__test_correlated_gaussian"
-source-dir="test"
+source-dir = "test"
 main = "correlated_gaussian.f90"
 [test.dependencies]
 linalg = { git = "https://gitlab.com/thomas.biekoetter/fpm-linalg.git" }
+[[test]]
+name = "copa__test_rosenbrock"
+source-dir = "test"
+main = "rosenbrock.f90"
 
