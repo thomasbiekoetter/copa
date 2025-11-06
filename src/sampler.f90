@@ -32,7 +32,9 @@ module copa__sampler
 
 contains
 
-  subroutine run_sampler(ndim, log_prior, log_like, nwalkers, nsteps, ranges, walkers, chains)
+  subroutine run_sampler(  &
+    ndim, log_prior, log_like,  &
+    nwalkers, nsteps, ranges, walkers, chains, log_probs)
 
     integer, intent(in) :: ndim
     procedure(log_prior_abstract) :: log_prior
@@ -42,6 +44,7 @@ contains
     real(wp), intent(in), optional :: ranges(:,:)
     real(wp), intent(out), allocatable, optional :: walkers(:,:)
     real(wp), intent(out), allocatable, optional :: chains(:,:,:)
+    real(wp), intent(out), allocatable, optional :: log_probs(:,:)
 
     real(wp) :: x
     integer :: nwal
@@ -49,6 +52,7 @@ contains
     real(wp), allocatable :: wal(:,:)
     real(wp), allocatable :: cha(:,:,:)
     real(wp), allocatable :: ran(:,:)
+    real(wp), allocatable :: lg_pb(:,:)
 
     integer :: i
     integer :: j
@@ -92,6 +96,7 @@ contains
 
     allocate(wal(ndim, nwal))
     allocate(cha(ndim, nwal, nste))
+    allocate(lg_pb(nwal,nste))
 
     do i = 1, ndim
       do j = 1, nwal
@@ -126,6 +131,9 @@ contains
         rand = randfloat()
         if (rand < min(1.0e0_wp, q)) then
           wal(:,i) = new_pos
+          lg_pb(i,step) = log_p_proposed
+        else
+          lg_pb(i,step) = log_p_current
         end if
 
       end do
@@ -147,6 +155,10 @@ contains
 
     if (present(chains)) then
       chains = cha
+    end if
+
+    if (present(log_probs)) then
+      log_probs = lg_pb
     end if
 
   contains
