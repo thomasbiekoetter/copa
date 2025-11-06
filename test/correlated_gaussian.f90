@@ -3,6 +3,7 @@ program copa__test_correlated_gaussian
   use copa__config, only : wp
   use copa__sampler, only : run_sampler
   use copa__store, only : store_chains
+  use copa__store, only : store_log_probs
   use copa__prior_functions, only : uniform_prior
   use evortran__prng_rand, only : initialize_rands
   use linalg_matrices_inverse, only : inversereal
@@ -20,6 +21,7 @@ program copa__test_correlated_gaussian
 
   real(wp), allocatable :: walkers(:,:)
   real(wp), allocatable :: chains(:,:,:)
+  real(wp), allocatable :: log_probs(:,:)
   real(wp) :: ranges(2,ndim)
 
   mu = 0.0e0_wp
@@ -44,11 +46,17 @@ program copa__test_correlated_gaussian
     nsteps=nsteps,  &
     ranges=ranges,  &
     walkers=walkers,  &
-    chains=chains)
+    chains=chains,  &
+    log_probs=log_probs)
 
   call store_chains(  &
     chains,  &
     "plots/correlated_gaussian/chains.npy",  &
+    mode='machine')
+
+  call store_log_probs(  &
+    log_probs,  &
+    "plots/correlated_gaussian/log_probs.npy",  &
     mode='machine')
 
 contains
