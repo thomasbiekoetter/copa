@@ -96,7 +96,7 @@ contains
 
     allocate(wal(ndim, nwal))
     allocate(cha(ndim, nwal, nste))
-    allocate(lg_pb(nwal,nste))
+    allocate(lg_pb(nwal, nste))
 
     do i = 1, ndim
       do j = 1, nwal

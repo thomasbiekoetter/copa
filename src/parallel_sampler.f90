@@ -34,8 +34,9 @@ module copa__parallel_sampler
 contains
 
   subroutine run_parallel_sampler(  &
-    ndim, log_prior, log_like, nwalkers, nsteps, nthreads,  &
-    ranges, walkers, chains)
+    ndim, log_prior, log_like,  &
+    nwalkers, nsteps, nthreads,  &
+    ranges, walkers, chains, log_probs)
 
     integer, intent(in) :: ndim
     procedure(log_prior_abstract) :: log_prior
@@ -46,12 +47,14 @@ contains
     real(wp), intent(in), optional :: ranges(:,:)
     real(wp), intent(out), allocatable, optional :: walkers(:,:,:)
     real(wp), intent(out), allocatable, optional :: chains(:,:,:,:)
+    real(wp), intent(out), allocatable, optional :: log_probs(:,:,:)
 
     integer :: nwal
     integer :: nste
     real(wp), allocatable :: wal(:,:,:)
     real(wp), allocatable :: cha(:,:,:,:)
     real(wp), allocatable :: ran(:,:)
+    real(wp), allocatable :: lg_pb(:,:,:)
 
     integer :: i
     integer :: j
@@ -108,6 +111,7 @@ contains
 
     allocate(wal(ndim, nwal, nthr))
     allocate(cha(ndim, nwal, nste, nthr))
+    allocate(lg_pb(nwal, nste, nthr))
 
     !$omp parallel do  &
     !$omp default(none)  &
@@ -115,7 +119,7 @@ contains
     !$omp   k, i, j, step, rand, z, new_pos,  &
     !$omp   log_p_current, log_p_proposed, q, skip)  &
     !$omp shared(  &
-    !$omp   nthr, ndim, nwal, wal, ran, nste, cha)
+    !$omp   nthr, ndim, nwal, wal, ran, nste, cha, lg_pb)
     do k = 1, nthr
 
       do i = 1, ndim
@@ -151,6 +155,9 @@ contains
           rand = randfloat()
           if (rand < min(1.0e0_wp, q)) then
             wal(:,i,k) = new_pos
+            lg_pb(i, step, k) = log_p_proposed
+          else
+            lg_pb(i, step, k) = log_p_current
           end if
 
         end do
@@ -177,6 +184,10 @@ contains
 
     if (present(chains)) then
       chains = cha
+    end if
+
+    if (present(log_probs)) then
+      log_probs = lg_pb
     end if
 
   contains
