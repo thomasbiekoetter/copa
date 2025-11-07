@@ -3,6 +3,7 @@ program copa__test_rosenbrock
   use copa__config, only : wp
   use copa__parallel_sampler, only : run_parallel_sampler
   use copa__store, only : store_chains
+  use copa__store, only : store_log_probs
   use copa__prior_functions, only : uniform_prior
   use evortran__prng_rand, only : initialize_rands
 
@@ -22,6 +23,7 @@ program copa__test_rosenbrock
     3.0e0_wp]
   real(wp), allocatable :: walkers(:,:,:)
   real(wp), allocatable :: chains(:,:,:,:)
+  real(wp), allocatable :: log_probs(:,:,:)
   real(wp) :: ranges(2,ndim)
 
   call initialize_rands(mode="twister", seed=1)
@@ -35,12 +37,18 @@ program copa__test_rosenbrock
     nthreads=nthreads,  &
     ranges=ranges,  &
     walkers=walkers,  &
-    chains=chains)
+    chains=chains,  &
+    log_probs=log_probs)
 
   call store_chains(  &
     chains,  &
     "plots/rosenbrock/chains.npy",  &
     mode="machine")
+
+  call store_log_probs(  &
+    log_probs,  &
+    "plots/rosenbrock/log_probs.npy",  &
+    mode='machine')
 
 contains
 
