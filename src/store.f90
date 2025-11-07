@@ -241,6 +241,41 @@ contains
     real(wp), intent(in) :: log_probs(:,:,:)
     character(len=*), intent(in) :: filename
 
+    real(wp), allocatable :: log_probs_1d(:)
+    integer :: ndim
+    integer :: nwalkers
+    integer :: nsteps
+    integer :: nthreads
+
+    integer :: i
+    integer :: j
+    integer :: k
+    integer :: l
+    integer :: row
+
+    nwalkers = size(log_probs, 1)
+    nsteps = size(log_probs, 2)
+    nthreads = size(log_probs, 3)
+
+    allocate(log_probs_1d(nwalkers * nsteps * nthreads))
+    log_probs_1d = 0.0e0_wp
+
+    row = 0
+    do l = 1, nthreads
+      do k = 1, nsteps
+        do j = 1, nwalkers
+          row = row + 1
+          log_probs_1d(row) = log_probs(j, k, l)
+        end do
+      end do
+    end do
+
+    open(unit=10, file=filename, form='unformatted', access='stream', status='replace')
+      do i = 1, nwalkers * nsteps * nthreads
+        write(10) log_probs_1d(i)
+      end do
+    close(10)
+
   end subroutine store_log_probs_machine_parallel
 
 end module copa__store
