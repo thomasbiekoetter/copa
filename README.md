@@ -1,19 +1,25 @@
 # **COPA – Chains for Optimization and Probabilistic Analysis**
 
 **COPA** is a lightweight and modular Fortran library for **Markov Chain Monte Carlo (MCMC)** sampling and probabilistic analysis.  
-It provides parallel and serial ensemble samplers with convenient tools for storing and analyzing Markov chains. COPA implements a parallel ensemble **Markov Chain Monte Carlo (MCMC)** sampler based on the **Affine Invariant Ensemble Sampler** algorithm introduced by **Goodman & Weare (2010)** — *Communications in Applied Mathematics and Computational Science, 5(1), 65–80* ([DOI:10.2140/camcos.2010.5.65](https://doi.org/10.2140/camcos.2010.5.65)).
+It provides parallel and serial ensemble samplers with convenient tools for storing and analyzing Markov chains. COPA implements a parallel ensemble MCMC sampler based on the **Affine Invariant Ensemble Sampler** algorithm introduced by **Goodman & Weare (2010)** — *Communications in Applied Mathematics and Computational Science, 5(1), 65–80* ([DOI:10.2140/camcos.2010.5.65](https://doi.org/10.2140/camcos.2010.5.65)).
 
 
 ---
 
 ## 🚀 Installation
 
-You can build COPA using the [Fortran Package Manager (fpm)](https://github.com/fortran-lang/fpm):
+You can build COPA using the gfortran compiler and the [Fortran Package Manager (fpm)](https://github.com/fortran-lang/fpm):
 
 ```bash
 git clone https://gitlab.com/thomas.biekoetter/copa.git
 cd copa
-fpm build --profile release
+source exports_run_gfortran.sh
+fpm build
+```
+Alternatively, one can build COPA using the intel ifx compiler:
+```bash
+source exports_run_ifx.sh
+fpm build
 ```
 
 ## 🧩 Example: Sampling the Rosenbrock Function
