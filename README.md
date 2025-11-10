@@ -1,14 +1,14 @@
-# **COPA – Chains for Optimization and Probabilistic Analysis**
+# **copa – Chains for Optimization and Probabilistic Analysis**
 
-**COPA** is a lightweight and modular Fortran library for **Markov Chain Monte Carlo (MCMC)** sampling and probabilistic analysis.  
-It provides parallel and serial ensemble samplers with convenient tools for storing and analyzing Markov chains. COPA implements a parallel ensemble MCMC sampler based on the **Affine Invariant Ensemble Sampler** algorithm introduced by **Goodman & Weare (2010)** — *Communications in Applied Mathematics and Computational Science, 5(1), 65–80* ([DOI:10.2140/camcos.2010.5.65](https://doi.org/10.2140/camcos.2010.5.65)).
+**copa** is a lightweight and modular Fortran library for **Markov Chain Monte Carlo (MCMC)** sampling and probabilistic analysis.  
+It provides parallel and serial ensemble samplers with convenient tools for storing and analyzing Markov chains. copa implements a parallel ensemble MCMC sampler based on the **Affine Invariant Ensemble Sampler** algorithm introduced by **Goodman & Weare (2010)** — *Communications in Applied Mathematics and Computational Science, 5(1), 65–80* ([DOI:10.2140/camcos.2010.5.65](https://doi.org/10.2140/camcos.2010.5.65)).
 
 
 ---
 
 ## 🚀 Installation
 
-You can build COPA using the gfortran compiler and the [Fortran Package Manager (fpm)](https://github.com/fortran-lang/fpm):
+You can build copa using the gfortran compiler and the [Fortran Package Manager (fpm)](https://github.com/fortran-lang/fpm):
 
 ```bash
 git clone https://gitlab.com/thomas.biekoetter/copa.git
@@ -16,7 +16,7 @@ cd copa
 source exports_run_gfortran.sh
 fpm build
 ```
-Alternatively, one can build COPA using the intel ifx compiler:
+Alternatively, one can build copa using the intel ifx compiler:
 ```bash
 source exports_run_ifx.sh
 fpm build
@@ -24,7 +24,7 @@ fpm build
 
 ## 🧩 Example: Sampling the Rosenbrock Function
 
-The example program `copa__test_rosenbrock` demonstrates how to use COPA to sample the **2D Rosenbrock function**, a common benchmark for optimization and MCMC methods.
+The example program `copa__test_rosenbrock` demonstrates how to use copa to sample the **2D Rosenbrock function**, a common benchmark for optimization and MCMC methods.
 
 To run the example:
 
@@ -41,7 +41,7 @@ You can analyze these with **NumPy** and visualize results using tools like [cor
 
 ## ⚙️ Parallel vs Serial Sampler
 
-COPA includes both **parallel** and **serial** ensemble samplers:
+copa includes both **parallel** and **serial** ensemble samplers:
 
 - **Parallel (OpenMP)** – uses multiple threads to accelerate sampling:  
   ```fortran
@@ -131,9 +131,9 @@ Both samplers return their results through the arguments `walkers`, `chains`, an
 
 ## 📜 License and Citation
 
-**COPA** is licensed under the **GNU General Public License v3 (GPLv3)**.
+**copa** is licensed under the **GNU General Public License v3 (GPLv3)**.
 
-If you use COPA in academic work, please cite the accompanying paper on **evortran**:
+If you use copa in academic work, please cite the accompanying paper on **evortran**:
 
 > T. Biekoetter, *Evortran: Evolutionary Optimization and Random Sampling in Modern Fortran*, [arXiv:2507.06082](https://arxiv.org/abs/2507.06082)
 
