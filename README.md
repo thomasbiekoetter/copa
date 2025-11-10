@@ -135,7 +135,7 @@ Both samplers return their results through the arguments `walkers`, `chains`, an
 
 If you use copa in academic work, please cite the accompanying paper on **evortran**:
 
-> T. Biekoetter, *Evortran: Evolutionary Optimization and Random Sampling in Modern Fortran*, [arXiv:2507.06082](https://arxiv.org/abs/2507.06082)
+> T. Biekötter, *evortran: a modern Fortran package for genetic algorithms with applications from LHC data fitting to LISA signal reconstruction*, [arXiv:2507.06082](https://arxiv.org/abs/2507.06082)
 
 
 
