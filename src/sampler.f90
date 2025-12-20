@@ -3,7 +3,6 @@ module copa__sampler
   use copa__config, only : wp
   use copa__config, only : nwalkers_default
   use copa__config, only : nsteps_default
-  use evortran__prng_rand, only : initialize_rands
   use evortran__prng_rand, only : randfloat
 
   implicit none
