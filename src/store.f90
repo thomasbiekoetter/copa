@@ -124,21 +124,21 @@ contains
     integer :: l
     integer :: row
 
-    ndim = size(chains, 1)
-    nwalkers = size(chains, 2)
-    nsteps = size(chains, 3)
-    nthreads = size(chains, 4)
+    nthreads = size(chains, 1)
+    ndim = size(chains, 2)
+    nwalkers = size(chains, 3)
+    nsteps = size(chains, 4)
 
     allocate(chains2d(nwalkers * nsteps * nthreads, ndim))
     chains2d = 0.0e0_wp
 
     row = 0
-    do l = 1, nthreads
-      do k = 1, nsteps
-         do j = 1, nwalkers
-            row = row + 1
-            chains2d(row, :) = chains(:, j, k, l)
-         end do
+    do k = 1, nsteps
+      do j = 1, nwalkers
+        do l = 1, nthreads
+          row = row + 1
+          chains2d(row, :) = chains(l, :, j, k)
+        end do
       end do
     end do
 
@@ -253,19 +253,19 @@ contains
     integer :: l
     integer :: row
 
-    nwalkers = size(log_probs, 1)
-    nsteps = size(log_probs, 2)
-    nthreads = size(log_probs, 3)
+    nthreads = size(log_probs, 1)
+    nwalkers = size(log_probs, 2)
+    nsteps = size(log_probs, 3)
 
     allocate(log_probs_1d(nwalkers * nsteps * nthreads))
     log_probs_1d = 0.0e0_wp
 
     row = 0
-    do l = 1, nthreads
-      do k = 1, nsteps
-        do j = 1, nwalkers
+    do k = 1, nsteps
+      do j = 1, nwalkers
+        do l = 1, nthreads
           row = row + 1
-          log_probs_1d(row) = log_probs(j, k, l)
+          log_probs_1d(row) = log_probs(l, j, k)
         end do
       end do
     end do

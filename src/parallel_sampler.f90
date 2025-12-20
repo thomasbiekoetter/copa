@@ -104,14 +104,14 @@ contains
       end if
       ran = ranges
     else
-      allocate(ran(2,ndim))
-      ran(1,:) = 0.0e0_wp
-      ran(2,:) = 1.0e0_wp
+      allocate(ran(2, ndim))
+      ran(1, :) = 0.0e0_wp
+      ran(2, :) = 1.0e0_wp
     end if
 
-    allocate(wal(ndim, nwal, nthr))
-    allocate(cha(ndim, nwal, nste, nthr))
-    allocate(lg_pb(nwal, nste, nthr))
+    allocate(wal(nthr, ndim, nwal))
+    allocate(cha(nthr, ndim, nwal, nste))
+    allocate(lg_pb(nthr, nwal, nste))
 
     !$omp parallel do  &
     !$omp default(none)  &
@@ -124,7 +124,7 @@ contains
 
       do i = 1, ndim
         do j = 1, nwal
-          wal(i,j,k) = randfloat(ran(1,i), ran(2,i))
+          wal(k, i, j) = randfloat(ran(1, i), ran(2, i))
         end do
       end do
 
@@ -144,32 +144,32 @@ contains
           z = z**2
 
           ! Propose new position
-          new_pos = wal(:,j,k) + z * (wal(:,i,k) - wal(:,j,k))
+          new_pos = wal(k, :, j) + z * (wal(k, :, i) - wal(k, :, j))
 
           ! Log probabilities
-          call log_prob(wal(:,i,k), log_p_current)
+          call log_prob(wal(k, :, i), log_p_current)
           call log_prob(new_pos, log_p_proposed)
 
           q = z**(ndim - 1) * exp(log_p_proposed - log_p_current)
 
           rand = randfloat()
           if (rand < min(1.0e0_wp, q)) then
-            wal(:,i,k) = new_pos
-            lg_pb(i, step, k) = log_p_proposed
+            wal(k, :, i) = new_pos
+            lg_pb(k, i, step) = log_p_proposed
           else
-            lg_pb(i, step, k) = log_p_current
+            lg_pb(k, i, step) = log_p_current
           end if
 
         end do
 
         ! Store current state
-        cha(:,:,step,k) = wal(:,:,k)
+        cha(k, :, :, step) = wal(k, :, :)
 
         ! Print progress
         if (k == 1) then
           skip = int(nste  / 10)
           if (mod(step, skip) == 0) then
-            write(*,'(a,i8,a,*(f8.4,1x))') 'Step:', step, '  Walker 1:', wal(:,1,k)
+            write(*,'(a,i8,a,*(f8.4,1x))') 'Step:', step, '  Walker 1:', wal(k, :, 1)
           end if
         end if
 
