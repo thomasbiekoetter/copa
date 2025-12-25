@@ -1,0 +1,36 @@
+@build-gfortran-debug
+option build --compiler gfortran --flag "-DDEBUG -fPIC -O0 -g -fbounds-check -fbacktrace -Wall -fmax-errors=1 -Wimplicit-interface -Wno-integer-division -fbounds-check"
+
+@install-gfortran-debug
+option install --compiler gfortran --flag "-DDEBUG -fPIC -O0 -g -fbounds-check -fbacktrace -Wall -fmax-errors=1 -Wimplicit-interface -Wno-integer-division -fbounds-check"
+
+@test-gfortran-debug
+option test --compiler gfortran --flag "-DDEBUG -fPIC -O0 -g -fbounds-check -fbacktrace -Wall -fmax-errors=1 -Wimplicit-interface -Wno-integer-division -fbounds-check"
+
+@build-gfortran
+option build --compiler gfortran --flag "-fPIC -O3 -march=native -fmax-errors=1 -ffixed-line-length-none -fno-range-check"
+
+@install-gfortran
+option install --compiler gfortran --flag "-fPIC -O3 -march=native -fmax-errors=1 -ffixed-line-length-none -fno-range-check"
+
+@test-gfortran
+option test --compiler gfortran --flag "-fPIC -O3 -march=native -fmax-errors=1 -ffixed-line-length-none -fno-range-check"
+
+@build-ifx-debug
+option build --compiler ifx --flag "-DDEBUG -fPIC -O0 -g -fbounds-check -fbacktrace -Wall -fmax-errors=1 -Wimplicit-interface -Wno-integer-division -fbounds-check"
+
+@install-ifx-debug
+option install --compiler ifx --flag "-DDEBUG -fPIC -O0 -g -fbounds-check -fbacktrace -Wall -fmax-errors=1 -Wimplicit-interface -Wno-integer-division -fbounds-check"
+
+@test-ifx-debug
+option test --compiler ifx --flag "-DDEBUG -fPIC -O0 -g -fbounds-check -fbacktrace -Wall -fmax-errors=1 -Wimplicit-interface -Wno-integer-division -fbounds-check"
+
+@build-ifx
+option build --compiler ifx --flag "-fPIC -O3 -march=native -fmax-errors=1 -ffixed-line-length-none -fno-range-check"
+
+@install-ifx
+option install --compiler ifx --flag "-fPIC -O3 -march=native -fmax-errors=1 -ffixed-line-length-none -fno-range-check"
+
+@test-ifx
+option test --compiler ifx --flag "-fPIC -O3 -march=native -fmax-errors=1 -ffixed-line-length-none -fno-range-check"
+

@@ -13,13 +13,15 @@ You can build copa using the gfortran compiler and the [Fortran Package Manager 
 ```bash
 git clone https://gitlab.com/thomas.biekoetter/copa.git
 cd copa
-source exports_run_gfortran.sh
-fpm build
+fpm @build-gfortran build
 ```
 Alternatively, one can build copa using the intel ifx compiler:
 ```bash
-source exports_run_ifx.sh
-fpm build
+fpm @build-ifx build
+```
+One can also build copa in debug mode, which contains additional compiler checks and runtime checks:
+```bash
+fpm @build-<gfortran/ifx>-debug build
 ```
 
 ## 🧩 Example: Sampling the Rosenbrock Function
@@ -29,7 +31,7 @@ The example program `copa__test_rosenbrock` demonstrates how to use copa to samp
 To run the example:
 
 ```bash
-fpm test copa__test_rosenbrock
+fpm @test-<gfortran/ifx> test copa__test_rosenbrock
 ```
 
 This will generate binary output files:
@@ -37,7 +39,7 @@ This will generate binary output files:
 - `plots/rosenbrock/chains.npy` – the full chain data  
 - `plots/rosenbrock/log_probs.npy` – the log-probability traces  
 
-You can analyze these with **NumPy** and visualize results using tools like [corner.py](https://corner.readthedocs.io/).
+You can analyze these with **NumPy** and visualize results using tools like [corner.py](https://corner.readthedocs.io/) or [GetDist](https://getdist.readthedocs.io/en/latest/).
 
 ## ⚙️ Parallel vs Serial Sampler
 
