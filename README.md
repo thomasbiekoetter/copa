@@ -119,17 +119,17 @@ These arguments control the initialization, parallelization, and prior support r
 
 Both samplers return their results through the arguments `walkers`, `chains`, and `log_probs`:
 
-- `walkers(ndim, nwalkers [, nthreads])`  
+- `walkers([nthreads,] ndim, nwalkers)`  
   The current positions of the ensemble of walkers at the latest sampling step.  
-  In the parallel sampler, the third dimension corresponds to the number of OpenMP threads.
+  In the parallel sampler, the first dimension corresponds to the number of OpenMP threads.
 
-- `chains(ndim, nwalkers, nsteps [, nthreads])`  
+- `chains([nthreads,] ndim, nwalkers, nsteps)`  
   The full sampling history of all walkers.  
   Each thread in the parallel version produces its own independent chain block along the fourth dimension.
 
-- `log_probs(nwalkers, nsteps [, nthreads])`  
+- `log_probs([nthreads,] nwalkers, nsteps)`  
   The log-probability values corresponding to each sampled state.  
-  Again, the optional fourth dimension is present only in the parallel sampler.
+  Again, the first dimension is present only in the parallel sampler.
 
 ## 📜 License and Citation
 
