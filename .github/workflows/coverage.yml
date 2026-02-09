@@ -39,7 +39,7 @@ jobs:
 
       # Upload HTML coverage report as artifact
       - name: Upload coverage HTML
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-html
           path: coverage-html
