@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 ndim = 2
 nwalkers = 50
 nsteps = 10000
-nthreads = 8
+nthreads = 4
 
 burn_in = 1000
 
