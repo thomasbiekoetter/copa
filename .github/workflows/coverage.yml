@@ -21,7 +21,7 @@ jobs:
       - name: Install LCOV 2.4
         run: |
           sudo apt-get update
-          sudo apt-get install -y perl wget make libcapture-tiny-perl
+          sudo apt-get install -y perl wget make libcapture-tiny-perl libdatetime-perl
           wget https://github.com/linux-test-project/lcov/releases/download/v2.4/lcov-2.4.tar.gz
           tar xzf lcov-2.4.tar.gz
           cd lcov-2.4
