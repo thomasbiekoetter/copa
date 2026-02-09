@@ -3,3 +3,6 @@
 *.csv
 *.npy
 *.pdf
+coverage.info
+coverage.filtered.info
+coverage-html/

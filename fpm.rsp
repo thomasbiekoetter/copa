@@ -34,3 +34,6 @@ option install --compiler ifx --flag "-fPIC -O3 -march=native -fmax-errors=1 -ff
 @test-ifx
 option test --compiler ifx --flag "-fPIC -O3 -march=native -fmax-errors=1 -ffixed-line-length-none -fno-range-check"
 
+@test-gfortran-coverage
+option test --compiler gfortran --flag "-DDEBUG -fPIC -O0 --coverage"
+
