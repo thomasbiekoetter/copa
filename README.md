@@ -1,6 +1,7 @@
 [![Language](https://img.shields.io/badge/-Fortran-734f96?logo=fortran&logoColor=white)](https://github.com/topics/fortran)
 [![DOI](https://img.shields.io/badge/doi-10.21468/SciPostPhysCodeb.64-darkblue.svg)](https://scipost.org/SciPostPhysCodeb.64)
 [![arXiv](https://img.shields.io/badge/arXiv-2507.06082-b31b1b.svg)](https://arxiv.org/abs/2507.06082)
+[![codecov](https://codecov.io/github/thomasbiekoetter/copa/graph/badge.svg?token=JC3O49KMQU)](https://codecov.io/github/thomasbiekoetter/copa)
 [![last-commit](https://img.shields.io/github/last-commit/thomasbiekoetter/copa)](https://github.com/thomasbiekoetter/copa/commits/master)
 
 # **copa – Chains for Optimization and Probabilistic Analysis**
