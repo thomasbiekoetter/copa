@@ -14,20 +14,15 @@ It provides parallel and serial ensemble samplers with convenient tools for stor
 
 ## 🚀 Installation
 
-You can build copa using the gfortran compiler and the [Fortran Package Manager (fpm)](https://github.com/fortran-lang/fpm):
+You can build copa using the GNU gfortran or the Intel ifx compiler and the [Fortran Package Manager (fpm)](https://github.com/fortran-lang/fpm):
 
 ```bash
 git clone https://gitlab.com/thomas.biekoetter/copa.git
-cd copa
-fpm @build-gfortran build
-```
-Alternatively, one can build copa using the intel ifx compiler:
-```bash
-fpm @build-ifx build
+fpm build --profile release
 ```
 One can also build copa in debug mode, which contains additional compiler checks and runtime checks:
 ```bash
-fpm @build-<gfortran/ifx>-debug build
+fpm build --profile debug
 ```
 
 ## 🧩 Example: Sampling the Rosenbrock Function
@@ -37,10 +32,10 @@ The example program `copa__test_rosenbrock` demonstrates how to use copa to samp
 To run the example:
 
 ```bash
-fpm @test-<gfortran/ifx> test copa__test_rosenbrock
+fpm test copa__test_rosenbrock
 ```
 
-This will generate binary output files:
+This will generate binary data files:
 
 - `plots/rosenbrock/chains.npy` – the full chain data  
 - `plots/rosenbrock/log_probs.npy` – the log-probability traces  

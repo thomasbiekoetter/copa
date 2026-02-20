@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Run tests (produces .gcda files)
-fpm @test-gfortran-coverage test
+fpm test --profile coverage
 
 # Collect only directories that actually contain .gcda files
 COV_DIRS=()
