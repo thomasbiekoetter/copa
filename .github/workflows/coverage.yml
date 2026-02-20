@@ -31,7 +31,7 @@ jobs:
       - name: Setup fpm
         uses: fortran-lang/setup-fpm@v9
         with:
-          version: latest
+          fpm-version: latest
 
       # Run your coverage script
       - name: Run coverage
