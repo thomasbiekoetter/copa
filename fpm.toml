@@ -41,6 +41,10 @@ linalg = { git = "https://gitlab.com/thomas.biekoetter/fpm-linalg.git" }
 name = "copa__test_rosenbrock"
 source-dir = "test"
 main = "rosenbrock.f90"
+[[test]]
+name = "copa__test_rosenbrock_logprior"
+source-dir = "test"
+main = "rosenbrock_logprior.f90"
 [features]
 debug.flags = "-DDEBUG -g -O0"
 debug.gfortran.flags = "-fbounds-check -fbacktrace -Wall -fmax-errors=1 -Wimplicit-interface -Wno-integer-division -fbounds-check"
