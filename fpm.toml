@@ -45,6 +45,10 @@ main = "rosenbrock.f90"
 name = "copa__test_rosenbrock_logprior"
 source-dir = "test"
 main = "rosenbrock_logprior.f90"
+[[test]]
+name = "copa__test_rosenbrock_gaussianprior"
+source-dir = "test"
+main = "rosenbrock_gaussianprior.f90"
 [features]
 debug.flags = "-DDEBUG -g -O0"
 debug.gfortran.flags = "-fbounds-check -fbacktrace -Wall -fmax-errors=1 -Wimplicit-interface -Wno-integer-division -fbounds-check"
