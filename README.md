@@ -12,6 +12,30 @@ It provides parallel and serial ensemble samplers with convenient tools for stor
 
 ---
 
+## 📜 License and Citation
+
+**copa** is licensed under the **GNU General Public License v3 (GPLv3)**.
+
+If you use copa in academic work, please cite the accompanying paper on **evortran**:
+
+> [arXiv:2507.06082]: Thomas Biekötter (IFT, Madrid), *evortran: a modern Fortran package for genetic algorithms with applications from LHC data fitting to LISA signal reconstruction*, [SciPost Phys. Codebases 64 (2026)]
+
+```bibtex
+@article{Biekotter:2025gkp,
+    author = {Biek{\"o}tter, Thomas},
+    title = "{evortran: A modern Fortran package for genetic algorithms with applications from LHC data fitting to LISA signal reconstruction}",
+    eprint = "2507.06082",
+    archivePrefix = "arXiv",
+    primaryClass = "hep-ph",
+    reportNumber = "IFT-UAM/CSIC-25-76",
+    doi = "10.21468/SciPostPhysCodeb.64",
+    journal = "SciPost Phys. Codeb.",
+    volume = "64",
+    pages = "1",
+    year = "2026"
+}
+```
+
 ## 🚀 Installation
 
 You can build copa using the GNU gfortran or the Intel ifx compiler and the [Fortran Package Manager (fpm)](https://github.com/fortran-lang/fpm):
@@ -131,14 +155,4 @@ Both samplers return their results through the arguments `walkers`, `chains`, an
 - `log_probs([nthreads,] nwalkers, nsteps)`  
   The log-probability values corresponding to each sampled state.  
   Again, the first dimension is present only in the parallel sampler.
-
-## 📜 License and Citation
-
-**copa** is licensed under the **GNU General Public License v3 (GPLv3)**.
-
-If you use copa in academic work, please cite the accompanying paper on **evortran**:
-
-> T. Biekötter, *evortran: a modern Fortran package for genetic algorithms with applications from LHC data fitting to LISA signal reconstruction*, [arXiv:2507.06082](https://arxiv.org/abs/2507.06082)
-
-
 
