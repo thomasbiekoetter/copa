@@ -9,6 +9,11 @@
 **copa** is a lightweight and modular Fortran library for **Markov Chain Monte Carlo (MCMC)** sampling and probabilistic analysis.  
 It provides parallel and serial ensemble samplers with convenient tools for storing and analyzing Markov chains. copa implements a parallel ensemble MCMC sampler based on the **Affine Invariant Ensemble Sampler** algorithm introduced by **Goodman & Weare (2010)** — *Communications in Applied Mathematics and Computational Science, 5(1), 65–80* ([DOI:10.2140/camcos.2010.5.65](https://doi.org/10.2140/camcos.2010.5.65)).
 
+## **pycopa – Python Wrapper**
+
+**pycopa** is a thin, user-friendly Python wrapper around the Fortran **copa** library.  
+It exposes copa’s ensemble MCMC samplers.  
+See the GitHub repository: [pycopa](https://github.com/thomasbiekoetter/pycopa)
 
 ---
 
