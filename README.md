@@ -11,9 +11,7 @@ It provides parallel and serial ensemble samplers with convenient tools for stor
 
 ## **pycopa – Python Wrapper**
 
-**pycopa** is a thin, user-friendly Python wrapper around the Fortran **copa** library.  
-It exposes copa’s ensemble MCMC samplers.  
-See the GitHub repository: [pycopa](https://github.com/thomasbiekoetter/pycopa)
+**pycopa** is a thin, user-friendly Python wrapper around the Fortran **copa** library. It exposes copa’s ensemble MCMC samplers. See the GitHub repository: [pycopa](https://github.com/thomasbiekoetter/pycopa)
 
 ---
 
