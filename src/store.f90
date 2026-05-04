@@ -297,28 +297,53 @@ contains
     integer :: l
     integer :: row
 
+    character(len=256) :: full_filename
+
     nthreads = size(log_probs, 1)
     nwalkers = size(log_probs, 2)
     nsteps = size(log_probs, 3)
 
-    allocate(log_probs_1d(nwalkers * nsteps * nthreads))
-    log_probs_1d = 0.0e0_wp
+    if (sp) then
 
-    row = 0
-    do k = 1, nsteps
+      allocate(log_probs_1d(nsteps))
+      log_probs_1d = 0.0e0_wp
+
       do j = 1, nwalkers
         do l = 1, nthreads
-          row = row + 1
-          log_probs_1d(row) = log_probs(l, j, k)
+          write(full_filename, '(A, I0, A, I0, A)') filename // "_", j, "_", l, ".npy"
+          open(  &
+            unit=10, file=full_filename, form='unformatted',  &
+            access='stream', status='replace')
+          log_probs_1d(:) = log_probs(l, j, :)
+          do k = 1, nsteps
+            write(10) log_probs_1d(k)
+          end do
+          close(10)
         end do
       end do
-    end do
 
-    open(unit=10, file=filename, form='unformatted', access='stream', status='replace')
-      do i = 1, nwalkers * nsteps * nthreads
-        write(10) log_probs_1d(i)
+    else
+
+      allocate(log_probs_1d(nwalkers * nsteps * nthreads))
+      log_probs_1d = 0.0e0_wp
+
+      row = 0
+      do k = 1, nsteps
+        do j = 1, nwalkers
+          do l = 1, nthreads
+            row = row + 1
+            log_probs_1d(row) = log_probs(l, j, k)
+          end do
+        end do
       end do
-    close(10)
+
+      open(unit=10, file=filename, form='unformatted', access='stream', status='replace')
+        do i = 1, nwalkers * nsteps * nthreads
+          write(10) log_probs_1d(i)
+        end do
+      close(10)
+
+    end if
 
   end subroutine store_log_probs_machine_parallel
 
