@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 import corner
 import matplotlib.pyplot as plt
+from getdist import MCSamples, plots
+import glob
+import re
 
 
 ndim = 2
@@ -9,34 +12,40 @@ nwalkers = 50
 nsteps = 10000
 nthreads = 4
 
-burn_in = 1000
+burn_in = nsteps / 10
 
-samples = np.fromfile('chains.npy', dtype=np.float64)
-samples = samples.reshape((nwalkers * nsteps * nthreads, ndim))
-samples = samples[burn_in:-1,:]
+files = glob.glob("chains_*.npy")
+files.sort(key=lambda f: [int(x) for x in re.findall(r'\d+', f)])
+samples = [np.fromfile(f, dtype=np.float64).reshape((nsteps, ndim)) for f in files]
 
-ranges = []
-dlim = 0
-ulim = 5
-for i in range(0, ndim):
-    ranges.append((dlim, ulim))
+files = glob.glob("log_probs_*.npy")
+files.sort(key=lambda f: [int(x) for x in re.findall(r'\d+', f)])
+loglikes = [np.fromfile(f, dtype=np.float64).reshape((nsteps, )) for f in files]
 
 labels = []
 for i in range(0, ndim):
-    l = r'$\theta_' + str(i + 1) + r'$'
+    l = r'\theta_' + str(i + 1)
     labels.append(l)
 
-figure = corner.corner(
-    samples,
-    bins=40,
-    smooth=1,
+samples = MCSamples(
+    samples=samples,
     labels=labels,
-    show_titles=True,
-    title_fmt=".2f",
-    levels=(0.68, 0.95),
-    range=ranges,
-#   flat=True,
-    plot_datapoints=False,
-)
+    ignore_rows=burn_in,
+    loglikes=loglikes,
+    names=['theta1', 'theta2'])
 
-plt.savefig('corner.pdf')
+g = plots.get_subplot_plotter()
+
+g.triangle_plot(
+    [samples],
+    shaded=True,
+    filled=True,
+    title_limit=1)
+
+g.export("bla.pdf")
+
+r_minus_1 = samples.getGelmanRubin()
+print("Gelman-Rubin R-1 = ", r_minus_1)
+
+marge = samples.getMargeStats()
+print(marge.parWithName('param1').mean)

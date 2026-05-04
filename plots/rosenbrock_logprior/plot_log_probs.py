@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import glob
+import re
 
 
 ndim = 2
@@ -7,21 +9,22 @@ nwalkers = 50
 nsteps = 10000
 nthreads = 4
 
-size = 100000
+files = glob.glob("chains_*.npy")
+files.sort(key=lambda f: [int(x) for x in re.findall(r'\d+', f)])
+samples = [np.fromfile(f, dtype=np.float64).reshape((nsteps, ndim)) for f in files]
+samples = np.concatenate(samples, axis=0)
 
-samples = np.fromfile('chains.npy', dtype=np.float64)
-samples = samples.reshape((nwalkers * nsteps * nthreads, ndim))
-samples = samples[-size:-1, :]
-
-log_probs = np.fromfile('log_probs.npy', dtype=np.float64)
-log_probs = log_probs[-size:-1]
+files = glob.glob("log_probs_*.npy")
+files.sort(key=lambda f: [int(x) for x in re.findall(r'\d+', f)])
+loglikes = [np.fromfile(f, dtype=np.float64).reshape((nsteps, )) for f in files]
+loglikes = np.concatenate(loglikes, axis=0)
 
 fig, ax = plt.subplots()
 
 sc = ax.scatter(
     samples[:, 0],
     samples[:, 1],
-    c=log_probs,
+    c=loglikes,
     s=4,
     rasterized=True)
 fig.colorbar(sc)

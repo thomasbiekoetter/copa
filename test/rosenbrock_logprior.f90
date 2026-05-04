@@ -42,14 +42,15 @@ program copa__test_rosenbrock_logprior
 
   call store_chains(  &
     chains,  &
-    "plots/rosenbrock_logprior/chains.npy",  &
+    "plots/rosenbrock_logprior/chains",  &
     mode="machine",  &
     separate=.true.)
 
   call store_log_probs(  &
     log_probs,  &
-    "plots/rosenbrock_logprior/log_probs.npy",  &
-    mode='machine')
+    "plots/rosenbrock_logprior/log_probs",  &
+    mode='machine',  &
+    separate=.true.)
 
 contains
 
