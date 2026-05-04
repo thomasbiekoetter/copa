@@ -43,7 +43,8 @@ program copa__test_rosenbrock_logprior
   call store_chains(  &
     chains,  &
     "plots/rosenbrock_logprior/chains.npy",  &
-    mode="machine")
+    mode="machine",  &
+    separate=.true.)
 
   call store_log_probs(  &
     log_probs,  &

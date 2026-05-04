@@ -19,13 +19,15 @@ module copa__store
 
 contains
 
-  subroutine store_chains(chains, filename, mode)
+  subroutine store_chains(chains, filename, mode, separate)
 
     real(wp), intent(in) :: chains(..)
     character(len=*), intent(in) :: filename
     character(len=*), intent(in), optional :: mode
+    logical, intent(in), optional :: separate
 
     character(len=:), allocatable :: md
+    logical :: sp
 
     if (present(mode)) then
       md = trim(mode)
@@ -33,12 +35,18 @@ contains
       md = 'human'
     end if
 
+    if (present(separate)) then
+      sp = separate
+    else
+      sp = .false.
+    end if
+
     if (md .eq. 'machine') then
       select rank(chains)
         rank(3)
           call store_chains_machine_single(chains, filename)
         rank(4)
-          call store_chains_machine_parallel(chains, filename)
+          call store_chains_machine_parallel(chains, filename, sp)
       end select
     else if (md .eq. 'human') then
       select rank(chains)
@@ -107,10 +115,11 @@ contains
 
   end subroutine store_chains_machine_single
 
-  subroutine store_chains_machine_parallel(chains, filename)
+  subroutine store_chains_machine_parallel(chains, filename, sp)
 
     real(wp), intent(in) :: chains(:,:,:,:)
     character(len=*), intent(in) :: filename
+    logical, intent(in) :: sp
 
     real(wp), allocatable :: chains2d(:,:)
     integer :: ndim
@@ -124,40 +133,68 @@ contains
     integer :: l
     integer :: row
 
+    character(len=256) :: full_filename
+
     nthreads = size(chains, 1)
     ndim = size(chains, 2)
     nwalkers = size(chains, 3)
     nsteps = size(chains, 4)
 
-    allocate(chains2d(nwalkers * nsteps * nthreads, ndim))
-    chains2d = 0.0e0_wp
+    if (sp) then
 
-    row = 0
-    do k = 1, nsteps
+      allocate(chains2d(nsteps, ndim))
+      chains2d = 0.0e0_wp
+
       do j = 1, nwalkers
         do l = 1, nthreads
-          row = row + 1
-          chains2d(row, :) = chains(l, :, j, k)
+          write(full_filename, '(A, I0, A, I0, A)') filename // "_", j, "_", l, ".npy"
+          open(  &
+            unit=10, file=full_filename, form='unformatted',  &
+            access='stream', status='replace')
+            ! Work-around because ifx complains with: write(10) chains2d
+          do k = 1, nsteps
+            chains2d(k, :) = chains(l, :, j, k)
+            write(10) chains2d(k, :)
+          end do
+          close(10)
         end do
       end do
-    end do
 
-    open(unit=10, file=filename, form='unformatted', access='stream', status='replace')
-      ! Work-around because ifx complains with: write(10) chains2d
-      do i = 1, nwalkers * nsteps * nthreads
-        write(10) chains2d(i, :)
+    else
+
+      allocate(chains2d(nwalkers * nsteps * nthreads, ndim))
+      chains2d = 0.0e0_wp
+
+      row = 0
+      do k = 1, nsteps
+        do j = 1, nwalkers
+          do l = 1, nthreads
+            row = row + 1
+            chains2d(row, :) = chains(l, :, j, k)
+          end do
+        end do
       end do
-    close(10)
+
+      open(unit=10, file=filename, form='unformatted', access='stream', status='replace')
+        ! Work-around because ifx complains with: write(10) chains2d
+        do i = 1, nwalkers * nsteps * nthreads
+          write(10) chains2d(i, :)
+        end do
+      close(10)
+
+    end if
 
   end subroutine store_chains_machine_parallel
 
-  subroutine store_log_probs(log_probs, filename, mode)
+  subroutine store_log_probs(log_probs, filename, mode, separate)
 
     real(wp), intent(in) :: log_probs(..)
     character(len=*), intent(in) :: filename
     character(len=*), intent(in), optional :: mode
+    logical, intent(in), optional :: separate
 
     character(len=:), allocatable :: md
+    logical :: sp
 
     if (present(mode)) then
       md = trim(mode)
@@ -165,12 +202,18 @@ contains
       md = 'human'
     end if
 
+    if (present(separate)) then
+      sp = separate
+    else
+      sp = .false.
+    end if
+
     if (md .eq. 'machine') then
       select rank(log_probs)
         rank(2)
           call store_log_probs_machine_single(log_probs, filename)
         rank(3)
-          call store_log_probs_machine_parallel(log_probs, filename)
+          call store_log_probs_machine_parallel(log_probs, filename, sp)
       end select
     else if (md .eq. 'human') then
       select rank(log_probs)
@@ -236,10 +279,11 @@ contains
 
   end subroutine store_log_probs_machine_single
 
-  subroutine store_log_probs_machine_parallel(log_probs, filename)
+  subroutine store_log_probs_machine_parallel(log_probs, filename, sp)
 
     real(wp), intent(in) :: log_probs(:,:,:)
     character(len=*), intent(in) :: filename
+    logical, intent(in) :: sp
 
     real(wp), allocatable :: log_probs_1d(:)
     integer :: ndim
