@@ -42,10 +42,8 @@ g.triangle_plot(
     filled=True,
     title_limit=1)
 
-g.export("bla.pdf")
+g.export("corner.pdf")
 
 r_minus_1 = samples.getGelmanRubin()
 print("Gelman-Rubin R-1 = ", r_minus_1)
 
-marge = samples.getMargeStats()
-print(marge.parWithName('param1').mean)
