@@ -169,7 +169,7 @@ contains
         if (k == 1) then
           skip = int(nste  / 10)
           if (mod(step, skip) == 0) then
-            write(*,'(a,i8,a,*(f8.4,1x))') 'Step:', step, '  Walker 1:', wal(k, :, 1)
+            write(*,'(a,i8,a,*(f12.4,1x))') 'Step:', step, ',    Walker 1:', wal(k, :, 1)
           end if
         end if
 
