@@ -44,7 +44,7 @@ If you use copa in academic work, please cite the accompanying paper on **evortr
 You can build copa using the GNU gfortran or the Intel ifx compiler and the [Fortran Package Manager (fpm)](https://github.com/fortran-lang/fpm):
 
 ```bash
-git clone https://gitlab.com/thomas.biekoetter/copa.git
+git clone https://github.com/thomasbiekoetter/copa
 fpm build --profile release
 ```
 One can also build copa in debug mode, which contains additional compiler checks and runtime checks:
