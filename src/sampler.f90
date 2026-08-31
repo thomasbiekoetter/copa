@@ -115,8 +115,7 @@ contains
 
         ! Stretch factor z ~ 1/sqrt(z)
         rand = randfloat()
-        z = ((a - 1.0e0_wp / a) * rand + 1.0e0_wp / a)
-        z = z**2
+        z = ((a - 1.0e0_wp) * rand + 1.0e0_wp)**2 / a
 
         ! Propose new position
         new_pos = wal(:,j) + z * (wal(:,i) - wal(:,j))
