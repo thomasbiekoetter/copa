@@ -3,14 +3,14 @@ import matplotlib.pyplot as plt
 
 
 ndim = 2
-nwalkers = 50
+nwalkers = 200
 nsteps = 10000
-nthreads = 4
+nensembles = 4
 
 size = 100000
 
 samples = np.fromfile('chains.npy', dtype=np.float64)
-samples = samples.reshape((nwalkers * nsteps * nthreads, ndim))
+samples = samples.reshape((nwalkers * nsteps * nensembles, ndim))
 samples = samples[-size:-1, :]
 
 log_probs = np.fromfile('log_probs.npy', dtype=np.float64)
