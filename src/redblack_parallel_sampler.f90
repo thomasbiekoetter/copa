@@ -80,6 +80,9 @@ contains
     integer :: ib
     integer :: ja
     integer :: jb
+    integer, allocatable :: naccept(:)
+    integer :: naccept_half
+    integer :: skip
 
     a = a_default
 
@@ -127,7 +130,10 @@ contains
     allocate(lg_pb(nens, nwal, nste))
     allocate(lp(nens, nwal))
 
+    allocate(naccept(nens))
     nhalf = nwal / 2
+    naccept = 0
+    skip = max(1, int(nste / 10))
 
     do e = 1, nens
 
@@ -154,9 +160,12 @@ contains
             jb = nhalf
           end if
 
+          naccept_half = 0
+
           !$omp parallel do default(none) &
           !$omp private(i, j, rand, z, new_pos, log_p_proposed, q) &
-          !$omp shared(a, e, ia, ib, ja, jb, ndim, wal, lp)
+          !$omp shared(a, e, ia, ib, ja, jb, ndim, wal, lp)  &
+          !$omp reduction(+:naccept_half)
           do i = ia, ib
 
             ! partner drawn only from the frozen half
@@ -174,21 +183,30 @@ contains
             ! Log probabilities
             call log_prob(new_pos, log_p_proposed)
 
-            q = z**(ndim - 1) * exp(log_p_proposed - lp(e, i))
+            q = z ** (ndim - 1) * exp(log_p_proposed - lp(e, i))
 
             rand = randfloat()
             if (rand < min(1.0e0_wp, q)) then
               wal(e, :, i) = new_pos
-              lp(e, i)     = log_p_proposed
+              lp(e, i) = log_p_proposed
+              naccept_half = naccept_half + 1
             end if
 
           end do
           !$omp end parallel do
 
+          naccept(e) = naccept(e) + naccept_half
+
         end do
 
         cha(e, :, :, step) = wal(e, :, :)
         lg_pb(e, :, step)  = lp(e, :)
+
+        if (mod(step, skip) == 0) then
+          write(*,'(a,i0,a,i0,a,i8,a,f8.3)') &
+            'Ensemble ', e, '/', nens, '   Step:', step, &
+            '   accept:', real(naccept(e), wp) / real(nwal * step * 2, wp)
+        end if
 
       end do
 
