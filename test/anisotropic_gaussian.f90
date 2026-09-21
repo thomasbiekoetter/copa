@@ -10,6 +10,7 @@ program copa__test_anisotropic_gaussian
 
   integer, parameter :: ndim = 5
   integer, parameter :: nthreads = 4
+  integer, parameter :: nwalkers = 50
   integer, parameter :: nsteps = int(40000 / nthreads)
   real(wp), parameter :: lower(ndim) = 1.0e2_wp
   real(wp), parameter :: upper(ndim) = 3.0e2_wp
@@ -38,6 +39,7 @@ program copa__test_anisotropic_gaussian
   call run_parallel_sampler(  &
     ndim, log_prior, log_like,  &
     method='independent',  &
+    nwalkers=nwalkers,  &
     nsteps=nsteps,  &
     nthreads=nthreads,  &
     ranges=ranges,  &
