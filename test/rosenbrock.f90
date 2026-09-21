@@ -5,7 +5,6 @@ program copa__test_rosenbrock
   use copa__store, only : store_chains
   use copa__store, only : store_log_probs
   use copa__prior_functions, only : uniform_prior
-  use evortran__prng_rand, only : initialize_rands
 
   implicit none
 
@@ -13,7 +12,7 @@ program copa__test_rosenbrock
   real(wp), parameter :: b = 1.0e2_wp
 
   integer, parameter :: ndim = 2
-  integer, parameter :: nthreads = 4
+  integer, parameter :: nthreads = 14
   integer, parameter :: nsteps = 10000
   real(wp), parameter :: lower(ndim) = [  &
     -2.0e0_wp,  &
@@ -26,19 +25,25 @@ program copa__test_rosenbrock
   real(wp), allocatable :: log_probs(:,:,:)
   real(wp) :: ranges(2,ndim)
 
-  call initialize_rands(mode="twister", seed=1)
-
   ranges(1,:) = lower
   ranges(2,:) = upper
 
   call run_parallel_sampler(  &
     ndim, log_prior, log_like,  &
+    method='redblack',  &
     nsteps=nsteps,  &
     nthreads=nthreads,  &
     ranges=ranges,  &
     walkers=walkers,  &
     chains=chains,  &
     log_probs=log_probs)
+
+  write(*,*) chains(1, :, 30, 1092)
+  write(*,*) chains(1, :, 30, 1093)
+  write(*,*) chains(1, :, 30, 1094)
+  write(*,*) chains(1, :, 30, 1095)
+  write(*,*) chains(1, :, 30, 1096)
+  call exit
 
   call store_chains(  &
     chains,  &

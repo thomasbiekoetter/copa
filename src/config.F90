@@ -13,7 +13,10 @@ module copa__config
   integer, parameter, public :: wp = dp
 #endif
 
-  integer, parameter, public :: nwalkers_default = 50
+  integer, parameter, public :: nwalkers_default = 100
   integer, parameter, public :: nsteps_default = 1000
+  integer, parameter, public :: nensembles_default = 4
+  real(wp), parameter, public :: a_default = 2.0e0_wp
+  character(len=*), parameter, public :: parallel_method_default = 'redblack'
 
 end module copa__config
