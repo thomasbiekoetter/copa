@@ -37,6 +37,7 @@ program copa__test_anisotropic_gaussian
 
   call run_parallel_sampler(  &
     ndim, log_prior, log_like,  &
+    method='independent',  &
     nsteps=nsteps,  &
     nthreads=nthreads,  &
     ranges=ranges,  &

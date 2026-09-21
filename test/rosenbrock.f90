@@ -12,7 +12,7 @@ program copa__test_rosenbrock
   real(wp), parameter :: b = 1.0e2_wp
 
   integer, parameter :: ndim = 2
-  integer, parameter :: nthreads = 8
+  integer, parameter :: nthreads = 4
   integer, parameter :: nwalkers = 200
   integer, parameter :: nsteps = 10000
   integer, parameter :: nensembles = 4

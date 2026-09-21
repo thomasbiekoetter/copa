@@ -33,6 +33,7 @@ program copa__test_rosenbrock_gaussianprior
 
   call run_parallel_sampler(  &
     ndim, log_prior, log_like,  &
+    method='independent',  &
     nsteps=nsteps,  &
     nthreads=nthreads,  &
     ranges=ranges,  &
