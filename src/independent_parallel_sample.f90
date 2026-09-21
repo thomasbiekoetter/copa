@@ -55,6 +55,7 @@ contains
     real(wp), allocatable :: cha(:,:,:,:)
     real(wp), allocatable :: ran(:,:)
     real(wp), allocatable :: lg_pb(:,:,:)
+    real(wp), allocatable :: lp(:, :)
 
     integer :: i
     integer :: j
@@ -116,20 +117,22 @@ contains
     allocate(wal(nthr, ndim, nwal))
     allocate(cha(nthr, ndim, nwal, nste))
     allocate(lg_pb(nthr, nwal, nste))
+    allocate(lp(nthr, nwal))
 
     !$omp parallel do  &
     !$omp default(none)  &
     !$omp private(  &
     !$omp   k, i, j, step, rand, z, new_pos,  &
-    !$omp   log_p_current, log_p_proposed, q, skip)  &
+    !$omp   log_p_proposed, q, skip)  &
     !$omp shared(  &
-    !$omp   nthr, ndim, nwal, wal, ran, nste, cha, lg_pb)
+    !$omp   nthr, ndim, nwal, wal, ran, nste, cha, lp, lg_pb)
     do k = 1, nthr
 
-      do i = 1, ndim
-        do j = 1, nwal
+      do j = 1, nwal
+        do i = 1, ndim
           wal(k, i, j) = randfloat(ran(1, i), ran(2, i))
         end do
+        call log_prob(wal(k, :, j), lp(k, j))
       end do
 
       do step = 1, nste
@@ -150,18 +153,17 @@ contains
           new_pos = wal(k, :, j) + z * (wal(k, :, i) - wal(k, :, j))
 
           ! Log probabilities
-          call log_prob(wal(k, :, i), log_p_current)
           call log_prob(new_pos, log_p_proposed)
 
-          q = z**(ndim - 1) * exp(log_p_proposed - log_p_current)
+          q = z**(ndim - 1) * exp(log_p_proposed - lp(k, i))
 
           rand = randfloat()
           if (rand < min(1.0e0_wp, q)) then
             wal(k, :, i) = new_pos
-            lg_pb(k, i, step) = log_p_proposed
-          else
-            lg_pb(k, i, step) = log_p_current
+            lp(k, i) = log_p_proposed
           end if
+
+          lg_pb(k, i, step)  = lp(k, i)
 
         end do
 
