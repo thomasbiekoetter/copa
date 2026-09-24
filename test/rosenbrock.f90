@@ -13,8 +13,8 @@ program copa__test_rosenbrock
 
   integer, parameter :: ndim = 2
   integer, parameter :: nthreads = 4
-  integer, parameter :: nwalkers = 200
-  integer, parameter :: nsteps = 10000
+  integer, parameter :: nwalkers = 100
+  integer, parameter :: nsteps = 1000
   integer, parameter :: nensembles = 4
   real(wp), parameter :: lower(ndim) = [  &
     -2.0e0_wp,  &
@@ -44,13 +44,15 @@ program copa__test_rosenbrock
 
   call store_chains(  &
     chains,  &
-    "plots/rosenbrock/chains.npy",  &
-    mode="machine")
+    "plots/rosenbrock/chains",  &
+    mode="machine",  &
+    separate=.true.)
 
   call store_log_probs(  &
     log_probs,  &
-    "plots/rosenbrock/log_probs.npy",  &
-    mode='machine')
+    "plots/rosenbrock/log_probs",  &
+    mode="machine",  &
+    separate=.true.)
 
 contains
 

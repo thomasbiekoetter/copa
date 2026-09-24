@@ -1,42 +1,47 @@
+import glob, re
 import numpy as np
-import pandas as pd
-import corner
-import matplotlib.pyplot as plt
+from collections import defaultdict
+from getdist import MCSamples, plots
 
-
+nsteps = 1000
 ndim = 2
-nwalkers = 200
-nsteps = 10000
-nensembles = 4
+burn_in = nsteps // 5
 
-burn_in = 1000
+names  = ['p1', 'p2']
+labels = [r'p_1', r'p_2']
 
-samples = np.fromfile('chains.npy', dtype=np.float64)
-samples = samples.reshape((nwalkers * nsteps * nensembles, ndim))
-samples = samples[burn_in:-1,:]
+def idx(f): # 'chains_3_7.npy' -> (3, 7)
+    iw, ie = map(int, re.findall(r'\d+', f))
+    return iw, ie
 
-ranges = []
-dlim = -1
-ulim = 3.5
-for i in range(0, ndim):
-    ranges.append((dlim, ulim))
+chain_files = {idx(f): f for f in glob.glob("chains_*_*.npy")}
+lp_files    = {idx(f): f for f in glob.glob("log_probs_*_*.npy")}
 
-labels = []
-for i in range(0, ndim):
-    l = r'$\theta_' + str(i + 1) + r'$'
-    labels.append(l)
+by_ensemble = defaultdict(list)
+for (iw, ie) in chain_files:
+    by_ensemble[ie].append(iw)
 
-figure = corner.corner(
+ensemble_samples = {}
+for ie, walkers in sorted(by_ensemble.items()):
+    chains   = [np.fromfile(chain_files[(iw, ie)], dtype=np.float64).reshape(nsteps, ndim)
+                for iw in walkers]
+    loglikes = [np.fromfile(lp_files[(iw, ie)], dtype=np.float64).reshape(nsteps)
+                for iw in walkers]
+    ensemble_samples[ie] = MCSamples(
+        samples=chains, # list -> walkers pooled, kept separate for convergence
+        loglikes=[-lp for lp in loglikes], # = -log(posterior) in getdist
+        names=names,
+        labels=labels,
+        label=f'Ensemble {ie}',
+        ignore_rows=burn_in) # applied per walker
+
+samples = [ensemble_samples[ie] for ie in sorted(ensemble_samples)]
+
+g = plots.get_subplot_plotter()
+
+g.triangle_plot(
     samples,
-    bins=40,
-    smooth=1,
-    labels=labels,
-    show_titles=True,
-    title_fmt=".2f",
-    levels=(0.68, 0.95),
-    range=ranges,
-#   flat=True,
-    plot_datapoints=False,
-)
+    filled=True,
+    title_limit=1)
 
-plt.savefig('corner.pdf')
+g.export("corner.pdf")
