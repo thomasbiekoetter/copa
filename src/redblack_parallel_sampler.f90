@@ -67,7 +67,7 @@ contains
     integer :: e
     integer :: step
     real(wp) :: z
-    real(wp) :: q
+    real(wp) :: log_q
     real(wp) :: log_p_proposed
     real(wp) :: rand
     real(wp) :: new_pos(ndim)
@@ -163,7 +163,7 @@ contains
           naccept_half = 0
 
           !$omp parallel do default(none) &
-          !$omp private(i, j, rand, z, new_pos, log_p_proposed, q) &
+          !$omp private(i, j, rand, z, new_pos, log_p_proposed, log_q) &
           !$omp shared(a, e, ia, ib, ja, jb, ndim, wal, lp)  &
           !$omp reduction(+:naccept_half)
           do i = ia, ib
@@ -183,10 +183,11 @@ contains
             ! Log probabilities
             call log_prob(new_pos, log_p_proposed)
 
-            q = z ** (ndim - 1) * exp(log_p_proposed - lp(e, i))
+!           q = z ** (ndim - 1) * exp(log_p_proposed - lp(e, i))
+            log_q = real(ndim - 1, wp) * log(z) + (log_p_proposed - lp(e, i))
 
             rand = randfloat()
-            if (rand < min(1.0e0_wp, q)) then
+            if (log(rand) < log_q) then ! equivalent to rand < min(1, exp(log_q))
               wal(e, :, i) = new_pos
               lp(e, i) = log_p_proposed
               naccept_half = naccept_half + 1
