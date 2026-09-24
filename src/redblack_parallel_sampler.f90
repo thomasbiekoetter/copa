@@ -71,6 +71,7 @@ contains
     real(wp) :: log_p_proposed
     real(wp) :: rand
     real(wp) :: new_pos(ndim)
+    real(wp) :: rndim
     real(wp) :: a
     integer :: ncpu
     integer :: nthr
@@ -134,6 +135,7 @@ contains
     nhalf = nwal / 2
     naccept = 0
     skip = max(1, int(nste / 10))
+    rndim = real(ndim, wp)
 
     do e = 1, nens
 
@@ -164,7 +166,7 @@ contains
 
           !$omp parallel do default(none) &
           !$omp private(i, j, rand, z, new_pos, log_p_proposed, log_q) &
-          !$omp shared(a, e, ia, ib, ja, jb, ndim, wal, lp)  &
+          !$omp shared(a, e, ia, ib, ja, jb, rndim, ndim, wal, lp)  &
           !$omp reduction(+:naccept_half)
           do i = ia, ib
 
@@ -184,7 +186,7 @@ contains
             call log_prob(new_pos, log_p_proposed)
 
 !           q = z ** (ndim - 1) * exp(log_p_proposed - lp(e, i))
-            log_q = real(ndim - 1, wp) * log(z) + (log_p_proposed - lp(e, i))
+            log_q = (rndim - 1.0e0_wp) * log(z) + (log_p_proposed - lp(e, i))
 
             rand = randfloat()
             if (log(rand) < log_q) then ! equivalent to rand < min(1, exp(log_q))

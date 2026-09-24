@@ -63,11 +63,11 @@ contains
     integer :: step
     integer :: skip
     real(wp) :: z
-    real(wp) :: q
-    real(wp) :: log_p_current
+    real(wp) :: log_q
     real(wp) :: log_p_proposed
     real(wp) :: rand
     real(wp) :: new_pos(ndim)
+    real(wp) :: rndim
     real(wp), parameter :: a = 2.0e0_wp
     integer :: ncpu
     integer :: nthr
@@ -119,13 +119,15 @@ contains
     allocate(lg_pb(nthr, nwal, nste))
     allocate(lp(nthr, nwal))
 
+    rndim = real(ndim, wp)
+
     !$omp parallel do  &
     !$omp default(none)  &
     !$omp private(  &
     !$omp   k, i, j, step, rand, z, new_pos,  &
-    !$omp   log_p_proposed, q, skip)  &
+    !$omp   log_p_proposed, log_q, skip)  &
     !$omp shared(  &
-    !$omp   nthr, ndim, nwal, wal, ran, nste, cha, lp, lg_pb)
+    !$omp   nthr, rndim, ndim, nwal, wal, ran, nste, cha, lp, lg_pb)
     do k = 1, nthr
 
       do j = 1, nwal
@@ -155,10 +157,11 @@ contains
           ! Log probabilities
           call log_prob(new_pos, log_p_proposed)
 
-          q = z**(ndim - 1) * exp(log_p_proposed - lp(k, i))
+          ! q = z**(ndim - 1) * exp(log_p_proposed - lp(k, i))
+          log_q = (rndim - 1.0e0_wp) * log(z) + (log_p_proposed - lp(k, i))
 
           rand = randfloat()
-          if (rand < min(1.0e0_wp, q)) then
+          if (log(rand) < log_q) then ! equivalent to rand < min(1, exp(log_q))
             wal(k, :, i) = new_pos
             lp(k, i) = log_p_proposed
           end if
