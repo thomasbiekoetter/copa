@@ -143,8 +143,15 @@ contains
         do i = 1, ndim
           wal(e, i, j) = randfloat(ran(1, i), ran(2, i))
         end do
+      end do
+
+      !$omp parallel do default(none)  &
+      !$omp private(j)  &
+      !$omp shared(e, nwal, wal, lp)
+      do j = 1, nwal
         call log_prob(wal(e, :, j), lp(e, j))
       end do
+      !$omp end parallel do
 
       do step = 1, nste
 
@@ -164,8 +171,8 @@ contains
 
           naccept_half = 0
 
-          !$omp parallel do default(none) &
-          !$omp private(i, j, rand, z, new_pos, log_p_proposed, log_q) &
+          !$omp parallel do default(none)  &
+          !$omp private(i, j, rand, z, new_pos, log_p_proposed, log_q)  &
           !$omp shared(a, e, ia, ib, ja, jb, rndim, ndim, wal, lp)  &
           !$omp reduction(+:naccept_half)
           do i = ia, ib
