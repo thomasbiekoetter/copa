@@ -1,7 +1,7 @@
 module copa__store
-
   use copa__config, only : wp
-
+  use copa__config, only : store_mode_default
+  use copa__config, only : store_separate_default
   implicit none
 
   private :: store_chains_human_single
@@ -32,13 +32,13 @@ contains
     if (present(mode)) then
       md = trim(mode)
     else
-      md = 'human'
+      md = store_mode_default
     end if
 
     if (present(separate)) then
       sp = separate
     else
-      sp = .false.
+      sp = store_separate_default
     end if
 
     if (md .eq. 'machine') then

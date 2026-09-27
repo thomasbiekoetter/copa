@@ -18,5 +18,7 @@ module copa__config
   integer, parameter, public :: nensembles_default = 4
   real(wp), parameter, public :: a_default = 2.0e0_wp
   character(len=*), parameter, public :: parallel_method_default = 'redblack'
+  character(len=*), parameter, public :: store_mode_default = 'machine'
+  logical, parameter, public :: store_separate_default = .true.
 
 end module copa__config
