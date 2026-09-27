@@ -62,12 +62,20 @@ To run the example:
 fpm test copa__test_rosenbrock
 ```
 
-This will generate binary data files:
+The example uses the parallel sampler with `method='redblack'` (4 ensembles of 100 walkers, 1000 steps each).
+The results are stored with `store_chains` and `store_log_probs`. Since the default storing mode is `mode='machine'`, the output consists of **binary files that are not human readable** (raw float64, no header). By default (`separate=.true.`), one file is written per walker and ensemble:
 
-- `plots/rosenbrock/chains.npy` – the full chain data  
-- `plots/rosenbrock/log_probs.npy` – the log-probability traces  
+- `plots/rosenbrock/chains_<walker>_<ensemble>.npy` – the chain of one walker, shape `(nsteps, ndim)`  
+- `plots/rosenbrock/log_probs_<walker>_<ensemble>.npy` – the log-probability trace of one walker, shape `(nsteps,)`  
 
-You can analyze these with **NumPy** and visualize results using tools like [corner.py](https://corner.readthedocs.io/) or [GetDist](https://getdist.readthedocs.io/en/latest/).
+For example, `chains_7_2.npy` contains walker 7 of ensemble 2. The files can be read with NumPy, e.g.
+```python
+import numpy as np
+chain = np.fromfile("chains_7_2.npy", dtype=np.float64).reshape(nsteps, ndim)
+```
+Passing `separate=.false.` instead writes all walkers and ensembles into a single file, named exactly as the given filename (no `.npy` suffix is appended).
+
+You can visualize results using tools like [corner.py](https://corner.readthedocs.io/) or [GetDist](https://getdist.readthedocs.io/en/latest/). The scripts `plots/rosenbrock/plot.py` (GetDist corner plot per ensemble) and `plots/rosenbrock/plot_log_probs.py` (log-probability scatter plot) show how to load and plot the output; run them from within `plots/rosenbrock/`.
 
 ## ⚙️ Parallel vs Serial Sampler
 
@@ -77,12 +85,13 @@ copa includes both **parallel** and **serial** ensemble samplers:
   ```fortran
   call run_parallel_sampler( &
       ndim, log_prior, log_like, &
-      nsteps=nsteps, nthreads=nthreads, &
+      method='redblack', &
+      nsteps=nsteps, nthreads=nthreads, nensembles=nensembles, &
       ranges=ranges, &
       walkers=walkers, chains=chains, log_probs=log_probs)
   ```
 
-- **Serial (single-threaded)** – same interface, simply omit the `nthreads` argument:  
+- **Serial (single-threaded)** – same interface, simply omit the `method`, `nthreads` and `nensembles` arguments:  
   ```fortran
   call run_sampler( &
       ndim, log_prior, log_like, &
@@ -92,6 +101,28 @@ copa includes both **parallel** and **serial** ensemble samplers:
   ```
 
 The number of threads can be controlled via OpenMP environment variables (e.g. `OMP_NUM_THREADS`) or at runtime within the code with the optional `nthreads` argument.
+
+### 🔀 Parallelization Methods
+
+The parallel sampler offers two parallelization strategies, selected with the optional `method` argument:
+
+- `method='redblack'` *(default)* – **Parallel walker updates within one ensemble.**  
+  The walkers of an ensemble are split into two halves. Each half is updated in parallel with the stretch move, using partner walkers drawn only from the other (frozen) half, which keeps the update a valid MCMC step (see the parallel stretch move in Foreman-Mackey et al. 2013, *PASP* 125, 306, [DOI:10.1086/670067](https://doi.org/10.1086/670067)). The `nensembles` ensembles are sampled one after another, each using all threads.  
+  Best suited for expensive likelihoods and/or large numbers of walkers. Requires an even `nwalkers` and `nthreads >= 2`.
+
+- `method='independent'` – **One independent ensemble per thread.**  
+  Each OpenMP thread runs its own complete ensemble with the serial stretch-move algorithm, so `nthreads` statistically independent ensembles are produced. The `nensembles` argument is ignored.  
+  Best suited for cheap likelihoods where the parallel overhead per step would dominate, or when many independent ensembles are desired.
+
+Example using the independent method:
+```fortran
+call run_parallel_sampler( &
+    ndim, log_prior, log_like, &
+    method='independent', &
+    nsteps=nsteps, nthreads=nthreads, &
+    ranges=ranges, &
+    walkers=walkers, chains=chains, log_probs=log_probs)
+```
 
 ### 🧩 Input Arguments
 
@@ -126,12 +157,21 @@ Some are **required**, while others are **optional**.
 
 #### **Optional Arguments**
 
+- `method`  
+  Character — the parallelization method, `'redblack'` (default) or `'independent'` (only for `run_parallel_sampler`). See [Parallelization Methods](#-parallelization-methods).
+
+- `nwalkers`  
+  Integer — the number of walkers per ensemble (default: 100). Must be even for `method='redblack'`.
+
 - `nsteps`  
   Integer — the number of sampling steps to run for each walker (default: 1000).
 
 - `nthreads`  
   Integer — the number of OpenMP threads to use (only for `run_parallel_sampler`).  
-  If omitted, OpenMP will use the maximum number of available threads.
+  If omitted, all available CPUs are used.
+
+- `nensembles`  
+  Integer — the number of ensembles sampled one after another (default: 4; only for `run_parallel_sampler` with `method='redblack'`).
 
 - `ranges`  
   Real array of shape `(2, ndim)` — defines lower and upper bounds for each parameter.  
@@ -147,15 +187,15 @@ These arguments control the initialization, parallelization, and prior support r
 
 Both samplers return their results through the arguments `walkers`, `chains`, and `log_probs`:
 
-- `walkers([nthreads,] ndim, nwalkers)`  
-  The current positions of the ensemble of walkers at the latest sampling step.  
-  In the parallel sampler, the first dimension corresponds to the number of OpenMP threads.
+- `walkers([nens,] ndim, nwalkers)`  
+  The current positions of the ensemble of walkers at the latest sampling step.
 
-- `chains([nthreads,] ndim, nwalkers, nsteps)`  
-  The full sampling history of all walkers.  
-  Each thread in the parallel version produces its own independent chain block along the fourth dimension.
+- `chains([nens,] ndim, nwalkers, nsteps)`  
+  The full sampling history of all walkers.
 
-- `log_probs([nthreads,] nwalkers, nsteps)`  
-  The log-probability values corresponding to each sampled state.  
-  Again, the first dimension is present only in the parallel sampler.
+- `log_probs([nens,] nwalkers, nsteps)`  
+  The log-probability values corresponding to each sampled state.
+
+The leading dimension `nens` is present only in the parallel sampler and indexes the ensembles:
+it equals `nensembles` for `method='redblack'` and `nthreads` for `method='independent'`.
 
