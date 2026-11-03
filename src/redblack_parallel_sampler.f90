@@ -115,6 +115,8 @@ contains
         "Optional argument 'ranges' should have rank 2."
       if ((size(ranges, 1) /= 2) .or. (size(ranges, 2) /= ndim)) error stop  &
         "Optional argument 'ranges' should have shape (2, ndim)."
+      if (.not. all(ranges(1, :) < ranges(2, :))) error stop  &
+        "Optional argument 'ranges' invalid."
       ran = ranges
     else
       allocate(ran(2, ndim))

@@ -86,6 +86,8 @@ contains
         write(*,*) "Optional argument 'ranges' should have shape (2, ndim)."
         call exit
       end if
+      if (.not. all(ranges(1, :) < ranges(2, :))) error stop  &
+        "Optional argument 'ranges' invalid."
       ran = ranges
     else
       allocate(ran(2,ndim))
